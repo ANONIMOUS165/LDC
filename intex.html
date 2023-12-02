@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste de Courses</title>
+</head>
+<body>
+
+    <h1>Liste de Courses</h1>
+
+    <div>
+        <label for="item">Ajouter un élément :</label>
+        <input type="text" id="item" placeholder="Entrez un élément">
+        <button onclick="ajouterElement()">Ajouter</button>
+    </div>
+
+    <ul id="liste">
+        <!-- Les éléments seront ajoutés ici -->
+    </ul>
+
+    <script>
+        // Charger la liste depuis le stockage local au chargement de la page
+        window.onload = function() {
+            var savedListe = JSON.parse(localStorage.getItem('listeCourses'));
+            if (savedListe) {
+                var liste = document.getElementById("liste");
+                savedListe.forEach(function(element) {
+                    var nouvelItem = document.createElement("li");
+                    nouvelItem.textContent = element;
+                    liste.appendChild(nouvelItem);
+                });
+            }
+        };
+
+        function ajouterElement() {
+            var nouvelElement = document.getElementById("item").value;
+            var liste = document.getElementById("liste");
+            var nouvelItem = document.createElement("li");
+            nouvelItem.textContent = nouvelElement;
+            liste.appendChild(nouvelItem);
+
+            // Enregistrer la liste dans le stockage local
+            var listeCourante = JSON.parse(localStorage.getItem('listeCourses')) || [];
+            listeCourante.push(nouvelElement);
+            localStorage.setItem('listeCourses', JSON.stringify(listeCourante));
+
+            // Appeler la fonction pour envoyer les données vers GitHub
+            envoyerVersGitHub(nouvelElement);
+        }
+
+        function envoyerVersGitHub(element) {
+            var url = "URL_DE_TON_REPO_GITHUB";
+            var contenu = encodeURIComponent(element);
+
+            fetch(url, {
+                method: 'POST',
+                body: JSON.stringify({ data: contenu }),
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            });
+        }
+    </script>
+
+</body>
+</html>
